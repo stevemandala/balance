@@ -19,7 +19,7 @@ hide_title: true
 
 **[*balance*](https://import-balance.org/) is a Python package** offering a simple workflow and methods for **dealing with biased data samples** when looking to infer from them to some population of interest.
 
-Biased samples often occur in [survey statistics](https://en.wikipedia.org/wiki/Survey_methodology) when respondents present [non-response bias or survey suffers from sampling bias](https://en.wikipedia.org/wiki/Sampling_bias) (that are not [missing completely at random](https://en.wikipedia.org/wiki/Missing_data#Missing_completely_at_random)). A similar issue arises in [observational studies](https://en.wikipedia.org/wiki/Observational_study) when comparing the treated vs untreated groups, and in any data that suffers from selection bias.
+Biased samples often occur in [survey statistics](https://en.wikipedia.org/wiki/Survey_methodology) when respondents present [non-response bias](https://en.wikipedia.org/wiki/Participation_bias) or survey suffers from [sampling bias](https://en.wikipedia.org/wiki/Sampling_bias) (that are not [missing completely at random](https://en.wikipedia.org/wiki/Missing_data#Missing_completely_at_random)). A similar issue arises in [observational studies](https://en.wikipedia.org/wiki/Observational_study) when comparing the treated vs untreated groups, and in any data that suffers from selection bias.
 
 Under the missing at random assumption ([MAR](https://en.wikipedia.org/wiki/Missing_data#Missing_at_random)), bias in samples could sometimes be (at least partially) mitigated by relying on auxiliary information (a.k.a.: “covariates” or “features”) that is present for all items in the sample, as well as present in a sample of items from the population. For example, if we want to infer from a sample of respondents to some survey, we may wish to adjust for non-response using demographic information such as age, gender, education, etc. This can be done by weighing the sample to the population using auxiliary information.
 
@@ -49,7 +49,7 @@ REQUIRES = [
 ]
 ```
 
-Note that glmnet_python must be installed from the [Github source](https://github.com/bbalasub1/glmnet_python.git@1.0)
+Note that glmnet_python must be installed from the [Github source](https://github.com/bbalasub1/glmnet_python)
 
 See [setup.py](https://github.com/facebookresearch/balance/blob/main/setup.py) for more details.
 
@@ -90,7 +90,7 @@ python -m pip install .
 
 The core workflow in [*balance*](https://import-balance.org/) deals with fitting and evaluating weights to a sample. For each unit in the sample (such as a respondent to a survey), balance fits a weight that can be (loosely) interpreted as the number of people from the target population that this respondent represents. This aims to help mitigate the coverage and non-response biases, as illustrated in the following figure.
 
-![total_survey_error_img](https://raw.githubusercontent.com/facebookresearch/balance/main/website/docs/docs/img/total_survey_error_image.png?token=GHSAT0AAAAAAB25KSTWSBZGTWAJ7LJ3U3G6Y3VG4XA)
+![total_survey_error_img](https://raw.githubusercontent.com/facebookresearch/balance/main/website/docs/docs/img/total_survey_error_flow_v02.png?token=GHSAT0AAAAAAB25KSTWSBZGTWAJ7LJ3U3G6Y3VG4XA)
 
 
 The weighting of survey data through *balance* is done in the following main steps:
@@ -117,7 +117,7 @@ from balance import load_data, Sample
 # load simulated example data
 target_df, sample_df = load_data()
 
-# Import dample and target data into a Sample object
+# Import sample and target data into a Sample object
 sample = Sample.from_frame(sample_df, outcome_columns=["happiness"])
 target = Sample.from_frame(target_df)
 
@@ -232,13 +232,17 @@ The *balance* package is licensed under the [GPLv2 license](https://github.com/f
 
 # News
 
-**TODO**: TBD.
+You can follow updates on our:
+* [Blog](https://import-balance.org/blog/)
+* [Changelog](https://github.com/facebookresearch/balance/blob/main/CHANGELOG.md)
 
 ## Acknowledgements / People
 
 The *balance* package is actively maintained by people from the [Core Data Science](https://research.facebook.com/teams/core-data-science/) team (in Tel Aviv and Boston), by [Tal Sarig](https://research.facebook.com/people/sarig-tal/), [Tal Galili](https://research.facebook.com/people/galili-tal/) and [Steve Mandala](https://research.facebook.com/people/mandala-steve/).
 
-The *balance* package was (and is) developed by many people, including: Adam Obeng, Kevin Liou, Sean Taylor, [Daniel Haimovich](https://research.facebook.com/people/haimovich-daniel/), [Luke Sonnet](https://lukesonnet.com/), [Tal Sarig](https://research.facebook.com/people/sarig-tal/), [Tal Galili](https://research.facebook.com/people/galili-tal/), [Roee Eilat](https://research.facebook.com/people/eilat-roee/), [Barak Yair Reif](https://www.linkedin.com/in/barak-yair-reif-2154365/?originalSubdomain=il), [Steve Mandala](https://research.facebook.com/people/mandala-steve/). and others.
+The *balance* package was (and is) developed by many people, including: [Roee Eilat](https://research.facebook.com/people/eilat-roee/), [Tal Galili](https://research.facebook.com/people/galili-tal/), [Daniel Haimovich](https://research.facebook.com/people/haimovich-daniel/), [Kevin Liou](https://www.linkedin.com/in/kevinycliou), [Steve Mandala](https://research.facebook.com/people/mandala-steve/), [Adam Obeng](https://adamobeng.com/) (author of the initial internal Meta version), [Tal Sarig](https://research.facebook.com/people/sarig-tal/),  [Luke Sonnet](https://www.linkedin.com/in/luke-sonnet), [Sean Taylor](https://seanjtaylor.com), [Barak Yair Reif](https://www.linkedin.com/in/barak-yair-reif-2154365/), and others. If you worked on balance in the past, please email us to be added to this list.
 
 The *balance* package was open-sourced by [Tal Sarig](https://research.facebook.com/people/sarig-tal/), [Tal Galili](https://research.facebook.com/people/galili-tal/) and [Steve Mandala](https://research.facebook.com/people/mandala-steve/) in late 2022.
+
+Branding created by [Dana Beaty](https://www.danabeaty.com/), from the Meta AI Design and Marketing Team.
 <!--AUTOGENERATED END-->

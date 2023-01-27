@@ -9,9 +9,6 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -60,8 +57,8 @@
     <span class="n">weighted_stats</span><span class="p">,</span>
     <span class="n">weights_stats</span><span class="p">,</span>
 <span class="p">)</span>
-
 <span class="kn">from</span> <span class="nn">balance.typing</span> <span class="kn">import</span> <span class="n">FilePathOrBuffer</span>
+<span class="kn">from</span> <span class="nn">balance.util</span> <span class="kn">import</span> <span class="n">find_items_index_in_list</span><span class="p">,</span> <span class="n">get_items_from_list_via_indices</span>
 
 <span class="kn">from</span> <span class="nn">IPython.lib.display</span> <span class="kn">import</span> <span class="n">FileLink</span>
 
@@ -69,7 +66,7 @@
 
 
 <div class="viewcode-block" id="BalanceDF"><a class="viewcode-back" href="../../balance.balancedf_class.html#balance.balancedf_class.BalanceDF">[docs]</a><span class="k">class</span> <span class="nc">BalanceDF</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper class around a Sample which provides additional balance-specific functionality</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -81,7 +78,7 @@
         <span class="n">sample</span><span class="p">:</span> <span class="n">Sample</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;outcomes&quot;</span><span class="p">,</span> <span class="s2">&quot;weights&quot;</span><span class="p">,</span> <span class="s2">&quot;covars&quot;</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;A basic init method used by BalanceOutcomesDF,BalanceCovarsDF, and BalanceWeightsDF</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A basic init method used by BalanceOutcomesDF,BalanceCovarsDF, and BalanceWeightsDF</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            self (BalanceDF): The object that is initiated.</span>
@@ -113,7 +110,7 @@
     <span class="k">def</span> <span class="nf">_check_if_not_BalanceDF</span><span class="p">(</span>
         <span class="n">BalanceDF_class_obj</span><span class="p">:</span> <span class="s2">&quot;BalanceDF&quot;</span><span class="p">,</span> <span class="n">object_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sample_BalanceDF&quot;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Check if an object is BalanceDF, if not then it raises ValueError</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if an object is BalanceDF, if not then it raises ValueError</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            BalanceDF_class_obj (BalanceDF): Object to check.</span>
@@ -131,7 +128,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceDF&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Sample&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Access __sample internal object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Access __sample internal object.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            self (BalanceDF): Object</span>
@@ -145,7 +142,7 @@
     <span class="k">def</span> <span class="nf">_weights</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceDF&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Access the weight_column in __sample.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Access the weight_column in __sample.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            self (BalanceDF): Object</span>
@@ -163,7 +160,7 @@
         <span class="nb">str</span><span class="p">,</span>
         <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;BalanceCovarsDF&quot;</span><span class="p">,</span> <span class="s2">&quot;BalanceWeightsDF&quot;</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;BalanceOutcomesDF&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]],</span>
     <span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns a dict with self and the same type of BalanceDF_child when created from the linked samples.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a dict with self and the same type of BalanceDF_child when created from the linked samples.</span>
 
 <span class="sd">        For example, if this function is called from a BalanceCovarsDF (originally created using `Sample.covars()`),</span>
 <span class="sd">        that was invoked by a Sample with a target then the return dict will have the keys &#39;self&#39; and &#39;target&#39;,</span>
@@ -315,7 +312,7 @@
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Call a given method on the linked DFs of the BalanceDF object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Call a given method on the linked DFs of the BalanceDF object.</span>
 <span class="sd">        Returns the result as a pandas DataFrame where the source column</span>
 <span class="sd">        indicates where the result came from</span>
 
@@ -417,7 +414,7 @@
     <span class="c1">#       Also, the output may sometimes no longer only be pd.DataFrame</span>
     <span class="c1">#       so such work will require update the type hinting here.</span>
 <div class="viewcode-block" id="BalanceDF.model_matrix"><a class="viewcode-back" href="../../balance.balancedf_class.html#balance.balancedf_class.BalanceDF.model_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">model_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceDF&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return a model_matrix version of the df inside the BalanceDF object using balance_util.model_matrix</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a model_matrix version of the df inside the BalanceDF object using balance_util.model_matrix</span>
 
 <span class="sd">        This can be used to turn all character columns into a one hot encoding columns.</span>
 
@@ -476,7 +473,7 @@
         <span class="n">numeric_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">add_na</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calls a given method from :func:`weighted_stats.descriptive_stats` on &#39;self&#39;.</span>
 <span class="sd">        This function knows how to extract the df and the weights from a BalanceDF object.</span>
 
@@ -512,7 +509,7 @@
         <span class="k">return</span> <span class="n">wdf</span>
 
 <div class="viewcode-block" id="BalanceDF.to_download"><a class="viewcode-back" href="../../balance.balancedf_class.html#balance.balancedf_class.BalanceDF.to_download">[docs]</a>    <span class="k">def</span> <span class="nf">to_download</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceDF&quot;</span><span class="p">,</span> <span class="n">tempdir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileLink</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Creates a downloadable link of the DataFrame, with ids, of the BalanceDF object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a downloadable link of the DataFrame, with ids, of the BalanceDF object.</span>
 
 <span class="sd">        File name starts with tmp_balance_out_, and some random file name (using :func:`uuid.uuid4`).</span>
 
@@ -529,7 +526,7 @@
     <span class="c1">#  All these functions operate on multiple samples</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">df</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceDF&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the df of the BalanceDF object.</span>
 
 <span class="sd">        The df is stored in the BalanceDF.__df object, that is set during the __init__ of the object.</span>
@@ -543,7 +540,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__df</span>
 
 <div class="viewcode-block" id="BalanceDF.names"><a class="viewcode-back" href="../../balance.balancedf_class.html#balance.balancedf_class.BalanceDF.names">[docs]</a>    <span class="k">def</span> <span class="nf">names</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceDF&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Returns the column names of the DataFrame (df) inside a BalanceDF object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the column names of the DataFrame (df) inside a BalanceDF object.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            self (BalanceDF): The object.</span>
@@ -581,8 +578,8 @@
 
 <div class="viewcode-block" id="BalanceDF.plot"><a class="viewcode-back" href="../../balance.balancedf_class.html#balance.balancedf_class.BalanceDF.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceDF&quot;</span><span class="p">,</span> <span class="n">on_linked_samples</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Plots the variables in the df of the BalanceDF object.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots the variables in the df of the BalanceDF object.</span>
 
 <span class="sd">        See :func:`weighted_comparisons_plots.plot_dist` for details of various arguments that can be passed.</span>
 <span class="sd">        The default plotting engine is plotly, but seaborn can be used for static plots.</span>
@@ -596,9 +593,9 @@
 <span class="sd">                Defaluts to True.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Union[Union[List, np.ndarray], Dict[str, go.Figure]]:</span>
+<span class="sd">            Union[Union[List, np.ndarray], Dict[str, go.Figure], None]:</span>
 <span class="sd">                If library=&quot;plotly&quot; then returns a dictionary containing plots if return_dict_of_figures is True. None otherwise.</span>
-<span class="sd">                If library=&quot;seaborn&quot; then returns either a list or an np.array of matplotlib axis.</span>
+<span class="sd">                If library=&quot;seaborn&quot; then returns None, unless return_axes is True. Then either a list or an np.array of matplotlib axis.</span>
 
 <span class="sd">        Examples:</span>
 <span class="sd">            ::</span>
@@ -640,24 +637,25 @@
             <span class="n">dfs_to_add</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_BalanceDF_child_from_linked_samples</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dfs_to_add</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;self&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">}</span>
+
+        <span class="c1"># Create a list of dicts, each dict representing a dataframe and weights</span>
+        <span class="c1"># Notice that we skip cases in which there is no data (i.e.: v is None)</span>
+        <span class="c1"># None values are skipped in both dfs and names</span>
         <span class="n">dfs</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">{</span><span class="s2">&quot;df&quot;</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;weights&quot;</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">_weights</span><span class="p">}</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dfs_to_add</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">k</span> <span class="o">!=</span> <span class="s2">&quot;target&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
         <span class="p">]</span>
-        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">dfs_to_add</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">&quot;target&quot;</span><span class="p">]</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dfs_to_add</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span><span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)]</span>
 
+        <span class="c1"># re-order dfs and names</span>
         <span class="c1"># NOTE: &quot;target&quot;, if exists, is placed at the end of the dict so that comparative plotting functions,</span>
-        <span class="c1"># specifically :func:`plot_qq`, will deal with it properly.</span>
-        <span class="n">self_target</span> <span class="o">=</span> <span class="n">dfs_to_add</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;target&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">self_target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;df&quot;</span><span class="p">:</span> <span class="n">self_target</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;weights&quot;</span><span class="p">:</span> <span class="n">self_target</span><span class="o">.</span><span class="n">_weights</span><span class="p">})</span>
-            <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;target&quot;</span><span class="p">)</span>
+        <span class="n">indices_of_ordered_names</span> <span class="o">=</span> <span class="n">find_items_index_in_list</span><span class="p">(</span>
+            <span class="n">names</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;unadjusted&quot;</span><span class="p">,</span> <span class="s2">&quot;self&quot;</span><span class="p">,</span> <span class="s2">&quot;adjusted&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">dfs</span> <span class="o">=</span> <span class="n">get_items_from_list_via_indices</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">indices_of_ordered_names</span><span class="p">)</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">get_items_from_list_via_indices</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">indices_of_ordered_names</span><span class="p">)</span>
 
-        <span class="c1"># pyre-ignore[6]: there is no concern that dfs can have None instead of a DataFrame</span>
-        <span class="c1">#                 the only worry is if target is not available, but the function deals</span>
-        <span class="c1">#                 with it when dfs is first define by ignoring &quot;target&quot;, and then only adding it if</span>
-        <span class="c1">#                 target is available (dfs_to_add.get(&quot;target&quot;)).</span>
         <span class="k">return</span> <span class="n">weighted_comparisons_plots</span><span class="o">.</span><span class="n">plot_dist</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
     <span class="c1">#  NOTE: The following functions use the _call_on_linked method</span>
@@ -665,7 +663,7 @@
 <div class="viewcode-block" id="BalanceDF.mean"><a class="viewcode-back" href="../../balance.balancedf_class.html#balance.balancedf_class.BalanceDF.mean">[docs]</a>    <span class="k">def</span> <span class="nf">mean</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceDF&quot;</span><span class="p">,</span> <span class="n">on_linked_samples</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Calculates a weighted mean on the df of the BalanceDF object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculates a weighted mean on the df of the BalanceDF object.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            self (BalanceDF): Object.</span>
@@ -733,7 +731,7 @@
 <div class="viewcode-block" id="BalanceDF.std"><a class="viewcode-back" href="../../balance.balancedf_class.html#balance.balancedf_class.BalanceDF.std">[docs]</a>    <span class="k">def</span> <span class="nf">std</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceDF&quot;</span><span class="p">,</span> <span class="n">on_linked_samples</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Calculates a weighted std on the df of the BalanceDF object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculates a weighted std on the df of the BalanceDF object.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            self (BalanceDF): Object.</span>
@@ -802,7 +800,7 @@
 <div class="viewcode-block" id="BalanceDF.summary"><a class="viewcode-back" href="../../balance.balancedf_class.html#balance.balancedf_class.BalanceDF.summary">[docs]</a>    <span class="k">def</span> <span class="nf">summary</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceDF&quot;</span><span class="p">,</span> <span class="n">on_linked_samples</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Returns a summary of BalanceDF class.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a summary of BalanceDF class.</span>
 
 <span class="sd">        Currently just uses :func:`BalanceDF.mean`. In the future this may be extended.</span>
 
@@ -823,7 +821,7 @@
     <span class="k">def</span> <span class="nf">_get_df_and_weights</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceDF&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Extract covars df (after using model_matrix) and weights from a BalanceDF object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract covars df (after using model_matrix) and weights from a BalanceDF object.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            self (BalanceDF): Object</span>
@@ -845,7 +843,7 @@
         <span class="n">target_BalanceDF</span><span class="p">:</span> <span class="s2">&quot;BalanceDF&quot;</span><span class="p">,</span>
         <span class="n">aggregate_by_main_covar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Run asmd on two BalanceDF objects</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run asmd on two BalanceDF objects</span>
 
 <span class="sd">        Prepares the BalanceDF objects by passing them through :func:`_get_df_and_weights`, and</span>
 <span class="sd">        then pass the df and weights from the two objects into :func:`weighted_comparisons_stats.asmd`.</span>
@@ -907,7 +905,7 @@
         <span class="n">aggregate_by_main_covar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;ASMD is the absolute difference of the means of two groups (say, P and T), divided by some standard deviation (std).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;ASMD is the absolute difference of the means of two groups (say, P and T), divided by some standard deviation (std).</span>
 <span class="sd">        It can be std of P or of T, or of P and T.</span>
 <span class="sd">        These are all variations on the absolute value of cohen&#39;s d (see: https://en.wikipedia.org/wiki/Effect_size#Cohen&#39;s_d).</span>
 
@@ -1033,7 +1031,7 @@
         <span class="n">unadjusted</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;BalanceDF&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;BalanceDF&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Calculates the improvement in mean(asmd) from before to after applying some weight adjustment.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculates the improvement in mean(asmd) from before to after applying some weight adjustment.</span>
 
 <span class="sd">        See :func:`weighted_comparisons_stats.asmd_improvement` for details.</span>
 
@@ -1146,7 +1144,7 @@
     <span class="c1">#     return NotImplementedError()</span>
 
     <span class="k">def</span> <span class="nf">_df_with_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceDF&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Creates a DataFrame of the BalanceDF, with ids.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a DataFrame of the BalanceDF, with ids.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            self (BalanceDF): Object.</span>
@@ -1162,7 +1160,7 @@
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Write df with ids from BalanceDF to a comma-separated values (csv) file.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write df with ids from BalanceDF to a comma-separated values (csv) file.</span>
 
 <span class="sd">        Uses :func:`pd.DataFrame.to_csv`.</span>
 
@@ -1182,7 +1180,7 @@
 
 <div class="viewcode-block" id="BalanceOutcomesDF"><a class="viewcode-back" href="../../balance.balancedf_class.html#balance.balancedf_class.BalanceOutcomesDF">[docs]</a><span class="k">class</span> <span class="nc">BalanceOutcomesDF</span><span class="p">(</span><span class="n">BalanceDF</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceOutcomesDF&quot;</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Sample</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;A factory function to create BalanceOutcomesDF</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A factory function to create BalanceOutcomesDF</span>
 
 <span class="sd">        This is used through :func:`Sample.outcomes`.</span>
 <span class="sd">        It initates a BalanceOutcomesDF object by passing the relevant arguments to</span>
@@ -1201,7 +1199,7 @@
         <span class="n">target</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">per_column</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Produces a summary table of number of responses and proportion of completed responses.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Produces a summary table of number of responses and proportion of completed responses.</span>
 
 <span class="sd">        See :func:`general_stats.relative_response_rates`.</span>
 
@@ -1298,7 +1296,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="BalanceOutcomesDF.target_response_rates"><a class="viewcode-back" href="../../balance.balancedf_class.html#balance.balancedf_class.BalanceOutcomesDF.target_response_rates">[docs]</a>    <span class="k">def</span> <span class="nf">target_response_rates</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceOutcomesDF&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Caclulates relative_response_rates for the target in a Sample object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Caclulates relative_response_rates for the target in a Sample object.</span>
 
 <span class="sd">        See :func:`general_stats.relative_response_rates`.</span>
 
@@ -1355,7 +1353,7 @@
 <div class="viewcode-block" id="BalanceOutcomesDF.summary"><a class="viewcode-back" href="../../balance.balancedf_class.html#balance.balancedf_class.BalanceOutcomesDF.summary">[docs]</a>    <span class="k">def</span> <span class="nf">summary</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceOutcomesDF&quot;</span><span class="p">,</span> <span class="n">on_linked_samples</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Produces summary printable string of a BalanceOutcomesDF object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Produces summary printable string of a BalanceOutcomesDF object.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            self (BalanceOutcomesDF): Object.</span>
@@ -1462,8 +1460,8 @@
     <span class="c1"># TODO: once we have hist/kde methods for plotly, consider changing the defaults here to use plotly instead of seaborn.</span>
 <div class="viewcode-block" id="BalanceOutcomesDF.plot"><a class="viewcode-back" href="../../balance.balancedf_class.html#balance.balancedf_class.BalanceOutcomesDF.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceOutcomesDF&quot;</span><span class="p">,</span> <span class="n">on_linked_samples</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Plots histogram of covariates in a BalanceOutcomesDF object using seaborn (as default).</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots histogram of covariates in a BalanceOutcomesDF object using seaborn (as default).</span>
 
 <span class="sd">        It&#39;s possible to use other plots using dist_type with arguments such as &quot;hist&quot; (default), &quot;kde&quot;, &quot;qq&quot;, and &quot;ecdf&quot;.</span>
 <span class="sd">        Look at :func:`plot_dist` for more details.</span>
@@ -1474,9 +1472,9 @@
 <span class="sd">                Defaluts to True.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Union[Union[List, np.ndarray], Dict[str, go.Figure]]:</span>
+<span class="sd">            Union[Union[List, np.ndarray], Dict[str, go.Figure], None]:</span>
 <span class="sd">                If library=&quot;plotly&quot; then returns a dictionary containing plots if return_dict_of_figures is True. None otherwise.</span>
-<span class="sd">                If library=&quot;seaborn&quot; then returns either a list or an np.array of matplotlib axis.</span>
+<span class="sd">                If library=&quot;seaborn&quot; then returns None, unless return_axes is True. Then either a list or an np.array of matplotlib axis.</span>
 
 <span class="sd">        Examples:</span>
 <span class="sd">            ::</span>
@@ -1532,7 +1530,7 @@
 
 <div class="viewcode-block" id="BalanceCovarsDF"><a class="viewcode-back" href="../../balance.balancedf_class.html#balance.balancedf_class.BalanceCovarsDF">[docs]</a><span class="k">class</span> <span class="nc">BalanceCovarsDF</span><span class="p">(</span><span class="n">BalanceDF</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceCovarsDF&quot;</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Sample</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;A factory function to create BalanceCovarsDF</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A factory function to create BalanceCovarsDF</span>
 
 <span class="sd">        This is used through :func:`Sample.covars`.</span>
 <span class="sd">        It initates a BalanceCovarsDF object by passing the relevant arguments to</span>
@@ -1549,7 +1547,7 @@
         <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">weights</span><span class="o">=</span><span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BalanceCovarsDF&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;A factory function to create a BalanceCovarsDF from a df.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A factory function to create a BalanceCovarsDF from a df.</span>
 
 <span class="sd">        Although generally the main way the object is created is through the __init__ method.</span>
 
@@ -1570,7 +1568,7 @@
 
 <div class="viewcode-block" id="BalanceWeightsDF"><a class="viewcode-back" href="../../balance.balancedf_class.html#balance.balancedf_class.BalanceWeightsDF">[docs]</a><span class="k">class</span> <span class="nc">BalanceWeightsDF</span><span class="p">(</span><span class="n">BalanceDF</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceWeightsDF&quot;</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Sample</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;A factory function to create BalanceWeightsDF</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A factory function to create BalanceWeightsDF</span>
 
 <span class="sd">        This is used through :func:`Sample.weights`.</span>
 <span class="sd">        It initates a BalanceWeightsDF object by passing the relevant arguments to</span>
@@ -1585,8 +1583,8 @@
     <span class="c1"># TODO: maybe add better control if there are no weights for unadjusted or target (the current default shows them in the legend, but not in the figure)</span>
 <div class="viewcode-block" id="BalanceWeightsDF.plot"><a class="viewcode-back" href="../../balance.balancedf_class.html#balance.balancedf_class.BalanceWeightsDF.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceWeightsDF&quot;</span><span class="p">,</span> <span class="n">on_linked_samples</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Plots kde (kernal density estimation) of the weights in a BalanceWeightsDF object using seaborn (as default).</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots kde (kernal density estimation) of the weights in a BalanceWeightsDF object using seaborn (as default).</span>
 
 <span class="sd">        It&#39;s possible to use other plots using dist_type with arguments such as &quot;hist&quot; (default), &quot;kde&quot;, &quot;qq&quot;, and &quot;ecdf&quot;.</span>
 <span class="sd">        Look at :func:`plot_dist` for more details.</span>
@@ -1597,9 +1595,9 @@
 <span class="sd">                Defaluts to True.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Union[Union[List, np.ndarray], Dict[str, go.Figure]]:</span>
+<span class="sd">            Union[Union[List, np.ndarray], Dict[str, go.Figure], None]:</span>
 <span class="sd">                If library=&quot;plotly&quot; then returns a dictionary containing plots if return_dict_of_figures is True. None otherwise.</span>
-<span class="sd">                If library=&quot;seaborn&quot; then returns either a list or an np.array of matplotlib axis.</span>
+<span class="sd">                If library=&quot;seaborn&quot; then returns None, unless return_axes is True. Then either a list or an np.array of matplotlib axis.</span>
 
 <span class="sd">        Examples:</span>
 <span class="sd">            ::</span>
@@ -1649,7 +1647,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">on_linked_samples</span><span class="o">=</span><span class="n">on_linked_samples</span><span class="p">,</span> <span class="o">**</span><span class="n">default_kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BalanceWeightsDF.design_effect"><a class="viewcode-back" href="../../balance.balancedf_class.html#balance.balancedf_class.BalanceWeightsDF.design_effect">[docs]</a>    <span class="k">def</span> <span class="nf">design_effect</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceWeightsDF&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Calculates Kish&#39;s design effect (deff) on the BalanceWeightsDF weights.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculates Kish&#39;s design effect (deff) on the BalanceWeightsDF weights.</span>
 
 <span class="sd">        Extract the first column to get a pd.Series of the weights.</span>
 
@@ -1667,7 +1665,7 @@
     <span class="c1">#       to reconsider as part of a larger code refactoring.</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;BalanceWeightsDF&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;A BalanceWeightsDF has no weights (its df is that of the weights.)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A BalanceWeightsDF has no weights (its df is that of the weights.)</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            self (BalanceWeightsDF): Object.</span>
@@ -1683,7 +1681,7 @@
         <span class="n">percentile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">keep_sum_of_weights</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Trim weights in the sample object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Trim weights in the sample object.</span>
 
 <span class="sd">        Uses :func:`adjustments.trim_weights` for the weights trimming.</span>
 
