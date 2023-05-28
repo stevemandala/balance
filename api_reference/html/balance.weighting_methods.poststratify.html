@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>balance.weighting_methods.poststratify &#8212; balance  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -14,6 +13,7 @@
     <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="balance.weighting_methods.rake" href="balance.weighting_methods.rake.html" />
     <link rel="prev" title="balance.weighting_methods.ipw" href="balance.weighting_methods.ipw.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -25,6 +25,9 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="balance.weighting_methods.rake.html" title="balance.weighting_methods.rake"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="balance.weighting_methods.ipw.html" title="balance.weighting_methods.ipw"
              accesskey="P">previous</a> |</li>
@@ -70,12 +73,12 @@ Default is True.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><p>weights (pd.Series): final weights (sum up to target’s sum of weights)
+<dd class="field-odd"><p><p>weight (pd.Series): final weights (sum up to target’s sum of weights)
 model (dict): method of adjustment</p>
 <p>Dict shape:
 {</p>
 <blockquote>
-<div><p>”weights”: w,
+<div><p>”weight”: w,
 “model”: {“method”: “poststratify”},</p>
 </div></blockquote>
 <p>}</p>
@@ -111,6 +114,11 @@ model (dict): method of adjustment</p>
     <p class="topless"><a href="balance.weighting_methods.ipw.html"
                           title="previous chapter">balance.weighting_methods.ipw</a></p>
   </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="balance.weighting_methods.rake.html"
+                          title="next chapter">balance.weighting_methods.rake</a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -141,6 +149,9 @@ model (dict): method of adjustment</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="balance.weighting_methods.rake.html" title="balance.weighting_methods.rake"
+             >next</a> |</li>
         <li class="right" >
           <a href="balance.weighting_methods.ipw.html" title="balance.weighting_methods.ipw"
              >previous</a> |</li>
