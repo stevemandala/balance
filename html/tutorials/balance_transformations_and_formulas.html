@@ -15101,7 +15101,116 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
     }
     init_mathjax();
     </script>
-    <!-- End of mathjax configuration --></head>
+    <!-- End of mathjax configuration --><script type="module">
+  document.addEventListener("DOMContentLoaded", async () => {
+    const diagrams = document.querySelectorAll(".jp-Mermaid > pre.mermaid");
+    // do not load mermaidjs if not needed
+    if (!diagrams.length) {
+      return;
+    }
+    const mermaid = (await import("https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.2.3/mermaid.esm.min.mjs")).default;
+
+    mermaid.initialize({
+      maxTextSize: 100000,
+      startOnLoad: false,
+      fontFamily: window
+        .getComputedStyle(document.body)
+        .getPropertyValue("--jp-ui-font-family"),
+      theme: document.querySelector("body[data-jp-theme-light='true']")
+        ? "default"
+        : "dark",
+    });
+
+    let _nextMermaidId = 0;
+
+    function makeMermaidImage(svg) {
+      const img = document.createElement('img');
+      const maxWidth = svg.match(/max-width: (\d+)/);
+      if (maxWidth && maxWidth[1]) {
+        const width = parseInt(maxWidth[1]);
+        if (width && !Number.isNaN(width) && Number.isFinite(width)) {
+          img.width = width;
+        }
+      }
+      img.setAttribute('src', `data:image/svg+xml,${encodeURIComponent(svg)}`);
+      return img;
+    }
+
+    async function makeMermaidError(text) {
+      let errorMessage = '';
+      try {
+        await mermaid.parse(text);
+      } catch (err) {
+        errorMessage = `${err}`;
+      }
+
+      const result = document.createElement('details');
+      const summary = document.createElement('summary');
+      const pre = document.createElement('pre');
+      const code = document.createElement('code');
+      code.innerText = text;
+      pre.appendChild(code);
+      summary.appendChild(pre);
+      result.appendChild(summary);
+
+      const warning = document.createElement('pre');
+      warning.innerText = errorMessage;
+      result.appendChild(warning);
+      return result;
+    }
+
+    async function renderOneMarmaid(src) {
+      const id = `jp-mermaid-${_nextMermaidId++}`;
+      const parent = src.parentNode;
+      let raw = src.textContent.trim();
+      const el = document.createElement("div");
+      el.style.visibility = "hidden";
+      document.body.appendChild(el);
+      let result = null;
+      try {
+        const { svg } = await mermaid.render(id, raw, el);
+        result = makeMermaidImage(svg);
+      } catch (err) {
+        parent.classList.add("jp-mod-warning");
+        result = await makeMermaidError(raw);
+      } finally {
+        el.remove();
+      }
+      parent.classList.add("jp-RenderedMermaid");
+      parent.appendChild(result);
+    }
+
+    void Promise.all([...diagrams].map(renderOneMarmaid));
+  });
+</script>
+<style>
+  .jp-RenderedMarkdown .jp-Mermaid:not(.jp-RenderedMermaid) {
+    display: none;
+  }
+  .jp-RenderedMarkdown .jp-RenderedMermaid.jp-mod-warning {
+    width: auto;
+    padding: 10px;
+    border: var(--jp-border-width) solid var(--jp-warn-color2);
+    border-radius: var(--jp-border-radius);
+    color: var(--jp-ui-font-color1);
+    font-size: var(--jp-ui-font-size1);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .jp-RenderedMarkdown .jp-RenderedMermaid.jp-mod-warning details > pre {
+    margin-top: 1em;
+  }
+  .jp-RenderedMarkdown .jp-RenderedMermaid.jp-mod-warning summary {
+    color: var(--jp-warn-color2);
+  }
+  .jp-RenderedMarkdown .jp-RenderedMermaid.jp-mod-warning summary > pre {
+    display: inline-block;
+  }
+  .jp-RenderedMermaid > .mermaid {
+    display: none;
+  }
+</style>
+<!-- End of mermaid configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
 
 <div  class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
@@ -15162,11 +15271,11 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>INFO (2023-05-28 15:52:59,771) [__init__/&lt;module&gt; (line 52)]: Using balance version 0.9.0
-WARNING (2023-05-28 15:52:59,911) [util/guess_id_column (line 111)]: Guessed id column name id for the data
-WARNING (2023-05-28 15:52:59,918) [sample_class/from_frame (line 259)]: No weights passed. Adding a &#39;weight&#39; column and setting all values to 1
-WARNING (2023-05-28 15:52:59,926) [util/guess_id_column (line 111)]: Guessed id column name id for the data
-WARNING (2023-05-28 15:52:59,940) [sample_class/from_frame (line 259)]: No weights passed. Adding a &#39;weight&#39; column and setting all values to 1
+<pre>INFO (2023-06-20 15:45:49,626) [__init__/&lt;module&gt; (line 52)]: Using balance version 0.9.0
+WARNING (2023-06-20 15:45:49,767) [util/guess_id_column (line 111)]: Guessed id column name id for the data
+WARNING (2023-06-20 15:45:49,775) [sample_class/from_frame (line 259)]: No weights passed. Adding a &#39;weight&#39; column and setting all values to 1
+WARNING (2023-06-20 15:45:49,785) [util/guess_id_column (line 111)]: Guessed id column name id for the data
+WARNING (2023-06-20 15:45:49,798) [sample_class/from_frame (line 259)]: No weights passed. Adding a &#39;weight&#39; column and setting all values to 1
 </pre>
 </div>
 </div>
@@ -15261,20 +15370,20 @@ WARNING (2023-05-28 15:52:59,940) [sample_class/from_frame (line 259)]: No weigh
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>INFO (2023-05-28 15:52:59,958) [ipw/ipw (line 428)]: Starting ipw function
-INFO (2023-05-28 15:52:59,961) [adjustment/apply_transformations (line 257)]: Adding the variables: []
-INFO (2023-05-28 15:52:59,962) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;gender&#39;, &#39;age_group&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:52:59,973) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;gender&#39;, &#39;age_group&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:52:59,981) [ipw/ipw (line 462)]: Building model matrix
-INFO (2023-05-28 15:53:00,083) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;income + gender + age_group + _is_na_gender&#39;]
-INFO (2023-05-28 15:53:00,084) [ipw/ipw (line 489)]: The number of columns in the model matrix: 16
-INFO (2023-05-28 15:53:00,085) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
-INFO (2023-05-28 15:53:00,093) [ipw/ipw (line 521)]: Fitting logistic model
-INFO (2023-05-28 15:53:01,776) [ipw/ipw (line 564)]: max_de: None
-INFO (2023-05-28 15:53:01,781) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.0131066]
-INFO (2023-05-28 15:53:01,782) [ipw/ipw (line 602)]: Proportion null deviance explained [0.17168419]
-INFO (2023-05-28 15:53:01,786) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
-INFO (2023-05-28 15:53:02,069) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
+<pre>INFO (2023-06-20 15:45:49,815) [ipw/ipw (line 428)]: Starting ipw function
+INFO (2023-06-20 15:45:49,819) [adjustment/apply_transformations (line 257)]: Adding the variables: []
+INFO (2023-06-20 15:45:49,819) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;gender&#39;, &#39;age_group&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:45:49,831) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;gender&#39;, &#39;age_group&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:45:49,839) [ipw/ipw (line 462)]: Building model matrix
+INFO (2023-06-20 15:45:49,935) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;income + gender + age_group + _is_na_gender&#39;]
+INFO (2023-06-20 15:45:49,936) [ipw/ipw (line 489)]: The number of columns in the model matrix: 16
+INFO (2023-06-20 15:45:49,937) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
+INFO (2023-06-20 15:45:49,945) [ipw/ipw (line 521)]: Fitting logistic model
+INFO (2023-06-20 15:45:51,636) [ipw/ipw (line 564)]: max_de: None
+INFO (2023-06-20 15:45:51,640) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.0131066]
+INFO (2023-06-20 15:45:51,641) [ipw/ipw (line 602)]: Proportion null deviance explained [0.17168419]
+INFO (2023-06-20 15:45:51,646) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
+INFO (2023-06-20 15:45:51,926) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
 </pre>
 </div>
 </div>
@@ -15473,17 +15582,17 @@ INFO (2023-05-28 15:53:02,069) [sample_class/diagnostics (line 1022)]: Done comp
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>INFO (2023-05-28 15:53:02,087) [ipw/ipw (line 428)]: Starting ipw function
-INFO (2023-05-28 15:53:02,089) [ipw/ipw (line 462)]: Building model matrix
-INFO (2023-05-28 15:53:02,158) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;income + gender + age_group + _is_na_gender&#39;]
-INFO (2023-05-28 15:53:02,159) [ipw/ipw (line 489)]: The number of columns in the model matrix: 8
-INFO (2023-05-28 15:53:02,160) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
-INFO (2023-05-28 15:53:02,167) [ipw/ipw (line 521)]: Fitting logistic model
-INFO (2023-05-28 15:53:04,151) [ipw/ipw (line 564)]: max_de: None
-INFO (2023-05-28 15:53:04,154) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.01683977]
-INFO (2023-05-28 15:53:04,155) [ipw/ipw (line 602)]: Proportion null deviance explained [0.17253226]
-INFO (2023-05-28 15:53:04,160) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
-INFO (2023-05-28 15:53:04,440) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
+<pre>INFO (2023-06-20 15:45:51,942) [ipw/ipw (line 428)]: Starting ipw function
+INFO (2023-06-20 15:45:51,944) [ipw/ipw (line 462)]: Building model matrix
+INFO (2023-06-20 15:45:52,009) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;income + gender + age_group + _is_na_gender&#39;]
+INFO (2023-06-20 15:45:52,010) [ipw/ipw (line 489)]: The number of columns in the model matrix: 8
+INFO (2023-06-20 15:45:52,011) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
+INFO (2023-06-20 15:45:52,018) [ipw/ipw (line 521)]: Fitting logistic model
+INFO (2023-06-20 15:45:53,993) [ipw/ipw (line 564)]: max_de: None
+INFO (2023-06-20 15:45:53,996) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.01683977]
+INFO (2023-06-20 15:45:53,997) [ipw/ipw (line 602)]: Proportion null deviance explained [0.17253226]
+INFO (2023-06-20 15:45:54,002) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
+INFO (2023-06-20 15:45:54,280) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
 </pre>
 </div>
 </div>
@@ -15642,21 +15751,21 @@ Regardless of the transformations, the model matrix made sure to turn the gender
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>INFO (2023-05-28 15:53:04,456) [ipw/ipw (line 428)]: Starting ipw function
-INFO (2023-05-28 15:53:04,459) [adjustment/apply_transformations (line 257)]: Adding the variables: []
-INFO (2023-05-28 15:53:04,459) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:04,467) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:04,475) [ipw/ipw (line 462)]: Building model matrix
-INFO (2023-05-28 15:53:04,574) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;income + gender + age_group + _is_na_gender&#39;]
-INFO (2023-05-28 15:53:04,575) [ipw/ipw (line 489)]: The number of columns in the model matrix: 8
-INFO (2023-05-28 15:53:04,576) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
-INFO (2023-05-28 15:53:04,583) [ipw/ipw (line 521)]: Fitting logistic model
-INFO (2023-05-28 15:53:05,940) [ipw/ipw (line 564)]: max_de: None
-INFO (2023-05-28 15:53:05,943) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.02499574]
-INFO (2023-05-28 15:53:05,945) [ipw/ipw (line 602)]: Proportion null deviance explained [0.09302873]
-WARNING (2023-05-28 15:53:05,946) [ipw/ipw (line 619)]: The propensity model has low fraction null deviance explained ([0.09302873]). Results may not be accurate
-INFO (2023-05-28 15:53:05,950) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
-INFO (2023-05-28 15:53:06,230) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
+<pre>INFO (2023-06-20 15:45:54,297) [ipw/ipw (line 428)]: Starting ipw function
+INFO (2023-06-20 15:45:54,301) [adjustment/apply_transformations (line 257)]: Adding the variables: []
+INFO (2023-06-20 15:45:54,301) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:45:54,309) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:45:54,318) [ipw/ipw (line 462)]: Building model matrix
+INFO (2023-06-20 15:45:54,411) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;income + gender + age_group + _is_na_gender&#39;]
+INFO (2023-06-20 15:45:54,412) [ipw/ipw (line 489)]: The number of columns in the model matrix: 8
+INFO (2023-06-20 15:45:54,412) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
+INFO (2023-06-20 15:45:54,419) [ipw/ipw (line 521)]: Fitting logistic model
+INFO (2023-06-20 15:45:55,781) [ipw/ipw (line 564)]: max_de: None
+INFO (2023-06-20 15:45:55,784) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.02499574]
+INFO (2023-06-20 15:45:55,785) [ipw/ipw (line 602)]: Proportion null deviance explained [0.09302873]
+WARNING (2023-06-20 15:45:55,787) [ipw/ipw (line 619)]: The propensity model has low fraction null deviance explained ([0.09302873]). Results may not be accurate
+INFO (2023-06-20 15:45:55,791) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
+INFO (2023-06-20 15:45:56,067) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
 </pre>
 </div>
 </div>
@@ -15811,22 +15920,22 @@ INFO (2023-05-28 15:53:06,230) [sample_class/diagnostics (line 1022)]: Done comp
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>INFO (2023-05-28 15:53:06,246) [ipw/ipw (line 428)]: Starting ipw function
-INFO (2023-05-28 15:53:06,249) [adjustment/apply_transformations (line 257)]: Adding the variables: []
-INFO (2023-05-28 15:53:06,250) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;gender&#39;]
-WARNING (2023-05-28 15:53:06,252) [adjustment/apply_transformations (line 292)]: Dropping the variables: [&#39;income&#39;, &#39;age_group&#39;]
-INFO (2023-05-28 15:53:06,252) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;gender&#39;]
-INFO (2023-05-28 15:53:06,256) [ipw/ipw (line 462)]: Building model matrix
-INFO (2023-05-28 15:53:06,294) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;gender + _is_na_gender&#39;]
-INFO (2023-05-28 15:53:06,295) [ipw/ipw (line 489)]: The number of columns in the model matrix: 4
-INFO (2023-05-28 15:53:06,296) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
-INFO (2023-05-28 15:53:06,303) [ipw/ipw (line 521)]: Fitting logistic model
-INFO (2023-05-28 15:53:07,070) [ipw/ipw (line 564)]: max_de: None
-INFO (2023-05-28 15:53:07,074) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.03209508]
-INFO (2023-05-28 15:53:07,075) [ipw/ipw (line 602)]: Proportion null deviance explained [0.02608629]
-WARNING (2023-05-28 15:53:07,076) [ipw/ipw (line 619)]: The propensity model has low fraction null deviance explained ([0.02608629]). Results may not be accurate
-INFO (2023-05-28 15:53:07,080) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
-INFO (2023-05-28 15:53:07,360) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
+<pre>INFO (2023-06-20 15:45:56,083) [ipw/ipw (line 428)]: Starting ipw function
+INFO (2023-06-20 15:45:56,086) [adjustment/apply_transformations (line 257)]: Adding the variables: []
+INFO (2023-06-20 15:45:56,086) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;gender&#39;]
+WARNING (2023-06-20 15:45:56,089) [adjustment/apply_transformations (line 292)]: Dropping the variables: [&#39;age_group&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:45:56,089) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;gender&#39;]
+INFO (2023-06-20 15:45:56,093) [ipw/ipw (line 462)]: Building model matrix
+INFO (2023-06-20 15:45:56,131) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;gender + _is_na_gender&#39;]
+INFO (2023-06-20 15:45:56,132) [ipw/ipw (line 489)]: The number of columns in the model matrix: 4
+INFO (2023-06-20 15:45:56,132) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
+INFO (2023-06-20 15:45:56,139) [ipw/ipw (line 521)]: Fitting logistic model
+INFO (2023-06-20 15:45:56,908) [ipw/ipw (line 564)]: max_de: None
+INFO (2023-06-20 15:45:56,912) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.03209508]
+INFO (2023-06-20 15:45:56,913) [ipw/ipw (line 602)]: Proportion null deviance explained [0.02608629]
+WARNING (2023-06-20 15:45:56,914) [ipw/ipw (line 619)]: The propensity model has low fraction null deviance explained ([0.02608629]). Results may not be accurate
+INFO (2023-06-20 15:45:56,918) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
+INFO (2023-06-20 15:45:57,192) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
 </pre>
 </div>
 </div>
@@ -15995,20 +16104,20 @@ INFO (2023-05-28 15:53:07,360) [sample_class/diagnostics (line 1022)]: Done comp
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>INFO (2023-05-28 15:53:07,382) [ipw/ipw (line 428)]: Starting ipw function
-INFO (2023-05-28 15:53:07,385) [adjustment/apply_transformations (line 257)]: Adding the variables: [&#39;income_squared&#39;, &#39;income_buckets&#39;]
-INFO (2023-05-28 15:53:07,385) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:07,393) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;income_squared&#39;, &#39;income_buckets&#39;, &#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:07,407) [ipw/ipw (line 462)]: Building model matrix
-INFO (2023-05-28 15:53:07,511) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;income_squared + income_buckets + income + gender + age_group + _is_na_gender&#39;]
-INFO (2023-05-28 15:53:07,512) [ipw/ipw (line 489)]: The number of columns in the model matrix: 11
-INFO (2023-05-28 15:53:07,513) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
-INFO (2023-05-28 15:53:07,520) [ipw/ipw (line 521)]: Fitting logistic model
-INFO (2023-05-28 15:53:09,616) [ipw/ipw (line 564)]: max_de: None
-INFO (2023-05-28 15:53:09,620) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.01593088]
-INFO (2023-05-28 15:53:09,621) [ipw/ipw (line 602)]: Proportion null deviance explained [0.17207485]
-INFO (2023-05-28 15:53:09,626) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
-INFO (2023-05-28 15:53:09,905) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
+<pre>INFO (2023-06-20 15:45:57,216) [ipw/ipw (line 428)]: Starting ipw function
+INFO (2023-06-20 15:45:57,219) [adjustment/apply_transformations (line 257)]: Adding the variables: [&#39;income_squared&#39;, &#39;income_buckets&#39;]
+INFO (2023-06-20 15:45:57,219) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:45:57,226) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;income_squared&#39;, &#39;income_buckets&#39;, &#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:45:57,240) [ipw/ipw (line 462)]: Building model matrix
+INFO (2023-06-20 15:45:57,338) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;income_squared + income_buckets + income + gender + age_group + _is_na_gender&#39;]
+INFO (2023-06-20 15:45:57,339) [ipw/ipw (line 489)]: The number of columns in the model matrix: 11
+INFO (2023-06-20 15:45:57,341) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
+INFO (2023-06-20 15:45:57,348) [ipw/ipw (line 521)]: Fitting logistic model
+INFO (2023-06-20 15:45:59,450) [ipw/ipw (line 564)]: max_de: None
+INFO (2023-06-20 15:45:59,454) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.01593088]
+INFO (2023-06-20 15:45:59,455) [ipw/ipw (line 602)]: Proportion null deviance explained [0.17207485]
+INFO (2023-06-20 15:45:59,459) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
+INFO (2023-06-20 15:45:59,735) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
 </pre>
 </div>
 </div>
@@ -16187,20 +16296,20 @@ INFO (2023-05-28 15:53:09,905) [sample_class/diagnostics (line 1022)]: Done comp
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>INFO (2023-05-28 15:53:09,921) [ipw/ipw (line 428)]: Starting ipw function
-INFO (2023-05-28 15:53:09,925) [adjustment/apply_transformations (line 257)]: Adding the variables: []
-INFO (2023-05-28 15:53:09,925) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:09,931) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:09,939) [ipw/ipw (line 462)]: Building model matrix
-INFO (2023-05-28 15:53:10,007) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;age_group * gender&#39;]
-INFO (2023-05-28 15:53:10,007) [ipw/ipw (line 489)]: The number of columns in the model matrix: 12
-INFO (2023-05-28 15:53:10,008) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
-INFO (2023-05-28 15:53:10,015) [ipw/ipw (line 521)]: Fitting logistic model
-INFO (2023-05-28 15:53:11,535) [ipw/ipw (line 564)]: max_de: None
-INFO (2023-05-28 15:53:11,539) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.02478636]
-INFO (2023-05-28 15:53:11,540) [ipw/ipw (line 602)]: Proportion null deviance explained [0.11329577]
-INFO (2023-05-28 15:53:11,544) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
-INFO (2023-05-28 15:53:11,824) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
+<pre>INFO (2023-06-20 15:45:59,753) [ipw/ipw (line 428)]: Starting ipw function
+INFO (2023-06-20 15:45:59,756) [adjustment/apply_transformations (line 257)]: Adding the variables: []
+INFO (2023-06-20 15:45:59,756) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:45:59,763) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:45:59,771) [ipw/ipw (line 462)]: Building model matrix
+INFO (2023-06-20 15:45:59,836) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;age_group * gender&#39;]
+INFO (2023-06-20 15:45:59,837) [ipw/ipw (line 489)]: The number of columns in the model matrix: 12
+INFO (2023-06-20 15:45:59,838) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
+INFO (2023-06-20 15:45:59,845) [ipw/ipw (line 521)]: Fitting logistic model
+INFO (2023-06-20 15:46:01,371) [ipw/ipw (line 564)]: max_de: None
+INFO (2023-06-20 15:46:01,375) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.02478636]
+INFO (2023-06-20 15:46:01,376) [ipw/ipw (line 602)]: Proportion null deviance explained [0.11329577]
+INFO (2023-06-20 15:46:01,381) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
+INFO (2023-06-20 15:46:01,663) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
 </pre>
 </div>
 </div>
@@ -16395,21 +16504,21 @@ INFO (2023-05-28 15:53:11,824) [sample_class/diagnostics (line 1022)]: Done comp
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>INFO (2023-05-28 15:53:11,841) [ipw/ipw (line 428)]: Starting ipw function
-INFO (2023-05-28 15:53:11,844) [adjustment/apply_transformations (line 257)]: Adding the variables: []
-INFO (2023-05-28 15:53:11,845) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:11,847) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:11,854) [ipw/ipw (line 462)]: Building model matrix
-INFO (2023-05-28 15:53:11,922) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;age_group + gender&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:11,922) [ipw/ipw (line 489)]: The number of columns in the model matrix: 7
-INFO (2023-05-28 15:53:11,924) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
-INFO (2023-05-28 15:53:11,932) [ipw/ipw (line 521)]: Fitting logistic model
-INFO (2023-05-28 15:53:12,824) [ipw/ipw (line 564)]: max_de: None
-INFO (2023-05-28 15:53:12,828) [ipw/ipw (line 594)]: Chosen lambda for cv: [2.81364473]
-INFO (2023-05-28 15:53:12,830) [ipw/ipw (line 602)]: Proportion null deviance explained [0.06543669]
-WARNING (2023-05-28 15:53:12,832) [ipw/ipw (line 619)]: The propensity model has low fraction null deviance explained ([0.06543669]). Results may not be accurate
-INFO (2023-05-28 15:53:12,836) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
-INFO (2023-05-28 15:53:13,118) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
+<pre>INFO (2023-06-20 15:46:01,681) [ipw/ipw (line 428)]: Starting ipw function
+INFO (2023-06-20 15:46:01,685) [adjustment/apply_transformations (line 257)]: Adding the variables: []
+INFO (2023-06-20 15:46:01,685) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:46:01,688) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:46:01,695) [ipw/ipw (line 462)]: Building model matrix
+INFO (2023-06-20 15:46:01,761) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;age_group + gender&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:46:01,762) [ipw/ipw (line 489)]: The number of columns in the model matrix: 7
+INFO (2023-06-20 15:46:01,764) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
+INFO (2023-06-20 15:46:01,771) [ipw/ipw (line 521)]: Fitting logistic model
+INFO (2023-06-20 15:46:02,670) [ipw/ipw (line 564)]: max_de: None
+INFO (2023-06-20 15:46:02,673) [ipw/ipw (line 594)]: Chosen lambda for cv: [2.81364473]
+INFO (2023-06-20 15:46:02,674) [ipw/ipw (line 602)]: Proportion null deviance explained [0.06543669]
+WARNING (2023-06-20 15:46:02,675) [ipw/ipw (line 619)]: The propensity model has low fraction null deviance explained ([0.06543669]). Results may not be accurate
+INFO (2023-06-20 15:46:02,680) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
+INFO (2023-06-20 15:46:02,957) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
 </pre>
 </div>
 </div>
@@ -16561,20 +16670,20 @@ INFO (2023-05-28 15:53:13,118) [sample_class/diagnostics (line 1022)]: Done comp
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>INFO (2023-05-28 15:53:13,134) [ipw/ipw (line 428)]: Starting ipw function
-INFO (2023-05-28 15:53:13,137) [adjustment/apply_transformations (line 257)]: Adding the variables: []
-INFO (2023-05-28 15:53:13,137) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:13,140) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:13,146) [ipw/ipw (line 462)]: Building model matrix
-INFO (2023-05-28 15:53:13,214) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;age_group + gender&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:13,215) [ipw/ipw (line 489)]: The number of columns in the model matrix: 7
-INFO (2023-05-28 15:53:13,216) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
-INFO (2023-05-28 15:53:13,224) [ipw/ipw (line 521)]: Fitting logistic model
-INFO (2023-05-28 15:53:14,443) [ipw/ipw (line 564)]: max_de: None
-INFO (2023-05-28 15:53:14,446) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.33591375]
-INFO (2023-05-28 15:53:14,447) [ipw/ipw (line 602)]: Proportion null deviance explained [0.11475535]
-INFO (2023-05-28 15:53:14,452) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
-INFO (2023-05-28 15:53:14,733) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
+<pre>INFO (2023-06-20 15:46:02,974) [ipw/ipw (line 428)]: Starting ipw function
+INFO (2023-06-20 15:46:02,977) [adjustment/apply_transformations (line 257)]: Adding the variables: []
+INFO (2023-06-20 15:46:02,977) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:46:02,980) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:46:02,986) [ipw/ipw (line 462)]: Building model matrix
+INFO (2023-06-20 15:46:03,052) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;age_group + gender&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:46:03,052) [ipw/ipw (line 489)]: The number of columns in the model matrix: 7
+INFO (2023-06-20 15:46:03,053) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
+INFO (2023-06-20 15:46:03,060) [ipw/ipw (line 521)]: Fitting logistic model
+INFO (2023-06-20 15:46:04,285) [ipw/ipw (line 564)]: max_de: None
+INFO (2023-06-20 15:46:04,289) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.33591375]
+INFO (2023-06-20 15:46:04,290) [ipw/ipw (line 602)]: Proportion null deviance explained [0.11475535]
+INFO (2023-06-20 15:46:04,294) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
+INFO (2023-06-20 15:46:04,575) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
 </pre>
 </div>
 </div>
@@ -16730,24 +16839,24 @@ INFO (2023-05-28 15:53:14,733) [sample_class/diagnostics (line 1022)]: Done comp
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>INFO (2023-05-28 15:53:14,749) [ipw/ipw (line 428)]: Starting ipw function
-INFO (2023-05-28 15:53:14,752) [adjustment/apply_transformations (line 257)]: Adding the variables: [&#39;income_buckets&#39;]
-INFO (2023-05-28 15:53:14,753) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
-/tmp/ipykernel_2023/861112312.py:7: FutureWarning:
+<pre>INFO (2023-06-20 15:46:04,593) [ipw/ipw (line 428)]: Starting ipw function
+INFO (2023-06-20 15:46:04,596) [adjustment/apply_transformations (line 257)]: Adding the variables: [&#39;income_buckets&#39;]
+INFO (2023-06-20 15:46:04,596) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
+/tmp/ipykernel_2147/861112312.py:7: FutureWarning:
 
 Dropping of nuisance columns in DataFrame reductions (with &#39;numeric_only=None&#39;) is deprecated; in a future version this will raise TypeError.  Select only valid columns before calling the reduction.
 
-INFO (2023-05-28 15:53:14,772) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;income_buckets&#39;, &#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:14,783) [ipw/ipw (line 462)]: Building model matrix
-INFO (2023-05-28 15:53:14,887) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;age_group + gender&#39;, &#39;income&#39;, &#39;income_buckets&#39;]
-INFO (2023-05-28 15:53:14,888) [ipw/ipw (line 489)]: The number of columns in the model matrix: 11
-INFO (2023-05-28 15:53:14,889) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
-INFO (2023-05-28 15:53:14,896) [ipw/ipw (line 521)]: Fitting logistic model
-INFO (2023-05-28 15:53:16,791) [ipw/ipw (line 564)]: max_de: None
-INFO (2023-05-28 15:53:16,796) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.02312964]
-INFO (2023-05-28 15:53:16,797) [ipw/ipw (line 602)]: Proportion null deviance explained [0.17210643]
-INFO (2023-05-28 15:53:16,801) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
-INFO (2023-05-28 15:53:17,083) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
+INFO (2023-06-20 15:46:04,616) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;income_buckets&#39;, &#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:46:04,628) [ipw/ipw (line 462)]: Building model matrix
+INFO (2023-06-20 15:46:04,727) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;age_group + gender&#39;, &#39;income&#39;, &#39;income_buckets&#39;]
+INFO (2023-06-20 15:46:04,728) [ipw/ipw (line 489)]: The number of columns in the model matrix: 11
+INFO (2023-06-20 15:46:04,728) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
+INFO (2023-06-20 15:46:04,736) [ipw/ipw (line 521)]: Fitting logistic model
+INFO (2023-06-20 15:46:06,641) [ipw/ipw (line 564)]: max_de: None
+INFO (2023-06-20 15:46:06,645) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.02312964]
+INFO (2023-06-20 15:46:06,646) [ipw/ipw (line 602)]: Proportion null deviance explained [0.17210643]
+INFO (2023-06-20 15:46:06,652) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
+INFO (2023-06-20 15:46:06,930) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
 </pre>
 </div>
 </div>
@@ -16926,24 +17035,24 @@ INFO (2023-05-28 15:53:17,083) [sample_class/diagnostics (line 1022)]: Done comp
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>INFO (2023-05-28 15:53:17,101) [ipw/ipw (line 428)]: Starting ipw function
-INFO (2023-05-28 15:53:17,104) [adjustment/apply_transformations (line 257)]: Adding the variables: [&#39;income_buckets&#39;]
-INFO (2023-05-28 15:53:17,105) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
-/tmp/ipykernel_2023/1264082352.py:7: FutureWarning:
+<pre>INFO (2023-06-20 15:46:06,948) [ipw/ipw (line 428)]: Starting ipw function
+INFO (2023-06-20 15:46:06,951) [adjustment/apply_transformations (line 257)]: Adding the variables: [&#39;income_buckets&#39;]
+INFO (2023-06-20 15:46:06,951) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
+/tmp/ipykernel_2147/1264082352.py:7: FutureWarning:
 
 Dropping of nuisance columns in DataFrame reductions (with &#39;numeric_only=None&#39;) is deprecated; in a future version this will raise TypeError.  Select only valid columns before calling the reduction.
 
-INFO (2023-05-28 15:53:17,125) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;income_buckets&#39;, &#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:17,136) [ipw/ipw (line 462)]: Building model matrix
-INFO (2023-05-28 15:53:17,241) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income + income_buckets&#39;]
-INFO (2023-05-28 15:53:17,241) [ipw/ipw (line 489)]: The number of columns in the model matrix: 12
-INFO (2023-05-28 15:53:17,242) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
-INFO (2023-05-28 15:53:17,249) [ipw/ipw (line 521)]: Fitting logistic model
-INFO (2023-05-28 15:53:19,236) [ipw/ipw (line 564)]: max_de: None
-INFO (2023-05-28 15:53:19,241) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.02344857]
-INFO (2023-05-28 15:53:19,242) [ipw/ipw (line 602)]: Proportion null deviance explained [0.17211675]
-INFO (2023-05-28 15:53:19,247) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
-INFO (2023-05-28 15:53:19,523) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
+INFO (2023-06-20 15:46:06,971) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;income_buckets&#39;, &#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:46:06,983) [ipw/ipw (line 462)]: Building model matrix
+INFO (2023-06-20 15:46:07,084) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income + income_buckets&#39;]
+INFO (2023-06-20 15:46:07,085) [ipw/ipw (line 489)]: The number of columns in the model matrix: 12
+INFO (2023-06-20 15:46:07,086) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
+INFO (2023-06-20 15:46:07,095) [ipw/ipw (line 521)]: Fitting logistic model
+INFO (2023-06-20 15:46:09,076) [ipw/ipw (line 564)]: max_de: None
+INFO (2023-06-20 15:46:09,080) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.02344857]
+INFO (2023-06-20 15:46:09,081) [ipw/ipw (line 602)]: Proportion null deviance explained [0.17211675]
+INFO (2023-06-20 15:46:09,086) [sample_class/diagnostics (line 822)]: Starting computation of diagnostics of the fitting
+INFO (2023-06-20 15:46:09,363) [sample_class/diagnostics (line 1022)]: Done computing diagnostics
 </pre>
 </div>
 </div>
@@ -17115,18 +17224,18 @@ INFO (2023-05-28 15:53:19,523) [sample_class/diagnostics (line 1022)]: Done comp
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>INFO (2023-05-28 15:53:19,539) [ipw/ipw (line 428)]: Starting ipw function
-INFO (2023-05-28 15:53:19,542) [adjustment/apply_transformations (line 257)]: Adding the variables: []
-INFO (2023-05-28 15:53:19,542) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;gender&#39;, &#39;age_group&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:19,553) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;gender&#39;, &#39;age_group&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:19,562) [ipw/ipw (line 462)]: Building model matrix
-INFO (2023-05-28 15:53:19,663) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;income + gender + age_group + _is_na_gender&#39;]
-INFO (2023-05-28 15:53:19,664) [ipw/ipw (line 489)]: The number of columns in the model matrix: 16
-INFO (2023-05-28 15:53:19,665) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
-INFO (2023-05-28 15:53:19,673) [ipw/ipw (line 521)]: Fitting logistic model
-INFO (2023-05-28 15:53:21,351) [ipw/ipw (line 564)]: max_de: None
-INFO (2023-05-28 15:53:21,356) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.0131066]
-INFO (2023-05-28 15:53:21,357) [ipw/ipw (line 602)]: Proportion null deviance explained [0.17168419]
+<pre>INFO (2023-06-20 15:46:09,381) [ipw/ipw (line 428)]: Starting ipw function
+INFO (2023-06-20 15:46:09,384) [adjustment/apply_transformations (line 257)]: Adding the variables: []
+INFO (2023-06-20 15:46:09,385) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;gender&#39;, &#39;age_group&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:46:09,396) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;gender&#39;, &#39;age_group&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:46:09,405) [ipw/ipw (line 462)]: Building model matrix
+INFO (2023-06-20 15:46:09,501) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;income + gender + age_group + _is_na_gender&#39;]
+INFO (2023-06-20 15:46:09,501) [ipw/ipw (line 489)]: The number of columns in the model matrix: 16
+INFO (2023-06-20 15:46:09,503) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
+INFO (2023-06-20 15:46:09,512) [ipw/ipw (line 521)]: Fitting logistic model
+INFO (2023-06-20 15:46:11,198) [ipw/ipw (line 564)]: max_de: None
+INFO (2023-06-20 15:46:11,202) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.0131066]
+INFO (2023-06-20 15:46:11,204) [ipw/ipw (line 602)]: Proportion null deviance explained [0.17168419]
 </pre>
 </div>
 </div>
@@ -17229,15 +17338,15 @@ class="
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>INFO (2023-05-28 15:53:22,386) [ipw/ipw (line 428)]: Starting ipw function
-INFO (2023-05-28 15:53:22,388) [ipw/ipw (line 462)]: Building model matrix
-INFO (2023-05-28 15:53:22,457) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;income + gender + age_group + _is_na_gender&#39;]
-INFO (2023-05-28 15:53:22,458) [ipw/ipw (line 489)]: The number of columns in the model matrix: 8
-INFO (2023-05-28 15:53:22,458) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
-INFO (2023-05-28 15:53:22,466) [ipw/ipw (line 521)]: Fitting logistic model
-INFO (2023-05-28 15:53:24,445) [ipw/ipw (line 564)]: max_de: None
-INFO (2023-05-28 15:53:24,448) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.01683977]
-INFO (2023-05-28 15:53:24,449) [ipw/ipw (line 602)]: Proportion null deviance explained [0.17253226]
+<pre>INFO (2023-06-20 15:46:12,255) [ipw/ipw (line 428)]: Starting ipw function
+INFO (2023-06-20 15:46:12,257) [ipw/ipw (line 462)]: Building model matrix
+INFO (2023-06-20 15:46:12,323) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;income + gender + age_group + _is_na_gender&#39;]
+INFO (2023-06-20 15:46:12,324) [ipw/ipw (line 489)]: The number of columns in the model matrix: 8
+INFO (2023-06-20 15:46:12,325) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
+INFO (2023-06-20 15:46:12,332) [ipw/ipw (line 521)]: Fitting logistic model
+INFO (2023-06-20 15:46:14,307) [ipw/ipw (line 564)]: max_de: None
+INFO (2023-06-20 15:46:14,311) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.01683977]
+INFO (2023-06-20 15:46:14,312) [ipw/ipw (line 602)]: Proportion null deviance explained [0.17253226]
 </pre>
 </div>
 </div>
@@ -17338,15 +17447,15 @@ class="
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>INFO (2023-05-28 15:53:25,465) [ipw/ipw (line 428)]: Starting ipw function
-INFO (2023-05-28 15:53:25,467) [ipw/ipw (line 462)]: Building model matrix
-INFO (2023-05-28 15:53:25,535) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;age_group + gender + income + income**2&#39;]
-INFO (2023-05-28 15:53:25,536) [ipw/ipw (line 489)]: The number of columns in the model matrix: 7
-INFO (2023-05-28 15:53:25,536) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
-INFO (2023-05-28 15:53:25,543) [ipw/ipw (line 521)]: Fitting logistic model
-INFO (2023-05-28 15:53:27,195) [ipw/ipw (line 564)]: max_de: None
-INFO (2023-05-28 15:53:27,199) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.02098571]
-INFO (2023-05-28 15:53:27,200) [ipw/ipw (line 602)]: Proportion null deviance explained [0.17160363]
+<pre>INFO (2023-06-20 15:46:15,348) [ipw/ipw (line 428)]: Starting ipw function
+INFO (2023-06-20 15:46:15,350) [ipw/ipw (line 462)]: Building model matrix
+INFO (2023-06-20 15:46:15,415) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;age_group + gender + income + income**2&#39;]
+INFO (2023-06-20 15:46:15,416) [ipw/ipw (line 489)]: The number of columns in the model matrix: 7
+INFO (2023-06-20 15:46:15,418) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
+INFO (2023-06-20 15:46:15,425) [ipw/ipw (line 521)]: Fitting logistic model
+INFO (2023-06-20 15:46:17,084) [ipw/ipw (line 564)]: max_de: None
+INFO (2023-06-20 15:46:17,087) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.02098571]
+INFO (2023-06-20 15:46:17,088) [ipw/ipw (line 602)]: Proportion null deviance explained [0.17160363]
 </pre>
 </div>
 </div>
@@ -17451,18 +17560,18 @@ class="
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>INFO (2023-05-28 15:53:28,285) [ipw/ipw (line 428)]: Starting ipw function
-INFO (2023-05-28 15:53:28,289) [adjustment/apply_transformations (line 257)]: Adding the variables: [&#39;income_buckets&#39;]
-INFO (2023-05-28 15:53:28,289) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:28,297) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;income_buckets&#39;, &#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:28,309) [ipw/ipw (line 462)]: Building model matrix
-INFO (2023-05-28 15:53:28,414) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;age_group + gender&#39;, &#39;income_buckets&#39;]
-INFO (2023-05-28 15:53:28,414) [ipw/ipw (line 489)]: The number of columns in the model matrix: 26
-INFO (2023-05-28 15:53:28,415) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
-INFO (2023-05-28 15:53:28,422) [ipw/ipw (line 521)]: Fitting logistic model
-INFO (2023-05-28 15:53:30,375) [ipw/ipw (line 564)]: max_de: None
-INFO (2023-05-28 15:53:30,379) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.0074004]
-INFO (2023-05-28 15:53:30,381) [ipw/ipw (line 602)]: Proportion null deviance explained [0.1759225]
+<pre>INFO (2023-06-20 15:46:18,193) [ipw/ipw (line 428)]: Starting ipw function
+INFO (2023-06-20 15:46:18,197) [adjustment/apply_transformations (line 257)]: Adding the variables: [&#39;income_buckets&#39;]
+INFO (2023-06-20 15:46:18,198) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:46:18,206) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;income_buckets&#39;, &#39;age_group&#39;, &#39;gender&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:46:18,218) [ipw/ipw (line 462)]: Building model matrix
+INFO (2023-06-20 15:46:18,318) [ipw/ipw (line 486)]: The formula used to build the model matrix: [&#39;age_group + gender&#39;, &#39;income_buckets&#39;]
+INFO (2023-06-20 15:46:18,319) [ipw/ipw (line 489)]: The number of columns in the model matrix: 26
+INFO (2023-06-20 15:46:18,319) [ipw/ipw (line 490)]: The number of rows in the model matrix: 11000
+INFO (2023-06-20 15:46:18,327) [ipw/ipw (line 521)]: Fitting logistic model
+INFO (2023-06-20 15:46:20,278) [ipw/ipw (line 564)]: max_de: None
+INFO (2023-06-20 15:46:20,282) [ipw/ipw (line 594)]: Chosen lambda for cv: [0.0074004]
+INFO (2023-06-20 15:46:20,283) [ipw/ipw (line 602)]: Proportion null deviance explained [0.1759225]
 </pre>
 </div>
 </div>
@@ -17583,19 +17692,19 @@ class="
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>INFO (2023-05-28 15:53:31,400) [cbps/cbps (line 409)]: Starting cbps function
-INFO (2023-05-28 15:53:31,403) [adjustment/apply_transformations (line 257)]: Adding the variables: []
-INFO (2023-05-28 15:53:31,404) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;gender&#39;, &#39;age_group&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:31,415) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;gender&#39;, &#39;age_group&#39;, &#39;income&#39;]
-INFO (2023-05-28 15:53:31,524) [cbps/cbps (line 460)]: The formula used to build the model matrix: [&#39;income + gender + age_group + _is_na_gender&#39;]
-INFO (2023-05-28 15:53:31,526) [cbps/cbps (line 472)]: The number of columns in the model matrix: 16
-INFO (2023-05-28 15:53:31,526) [cbps/cbps (line 473)]: The number of rows in the model matrix: 11000
-INFO (2023-05-28 15:53:31,537) [cbps/cbps (line 535)]: Finding initial estimator for GMM optimization
-INFO (2023-05-28 15:53:31,653) [cbps/cbps (line 562)]: Finding initial estimator for GMM optimization that minimizes the balance loss
-INFO (2023-05-28 15:53:31,994) [cbps/cbps (line 597)]: Running GMM optimization
-WARNING (2023-05-28 15:53:32,577) [cbps/cbps (line 612)]: Convergence of gmm_loss function with gmm_init start point has failed due to &#39;Maximum number of function evaluations has been exceeded.&#39;
-WARNING (2023-05-28 15:53:33,162) [cbps/cbps (line 630)]: Convergence of gmm_loss function with beta_balance start point has failed due to &#39;Maximum number of function evaluations has been exceeded.&#39;
-INFO (2023-05-28 15:53:33,168) [cbps/cbps (line 726)]: Done cbps function
+<pre>INFO (2023-06-20 15:46:21,317) [cbps/cbps (line 409)]: Starting cbps function
+INFO (2023-06-20 15:46:21,320) [adjustment/apply_transformations (line 257)]: Adding the variables: []
+INFO (2023-06-20 15:46:21,321) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;gender&#39;, &#39;age_group&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:46:21,333) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;gender&#39;, &#39;age_group&#39;, &#39;income&#39;]
+INFO (2023-06-20 15:46:21,436) [cbps/cbps (line 460)]: The formula used to build the model matrix: [&#39;income + gender + age_group + _is_na_gender&#39;]
+INFO (2023-06-20 15:46:21,439) [cbps/cbps (line 472)]: The number of columns in the model matrix: 16
+INFO (2023-06-20 15:46:21,440) [cbps/cbps (line 473)]: The number of rows in the model matrix: 11000
+INFO (2023-06-20 15:46:21,447) [cbps/cbps (line 535)]: Finding initial estimator for GMM optimization
+INFO (2023-06-20 15:46:21,525) [cbps/cbps (line 562)]: Finding initial estimator for GMM optimization that minimizes the balance loss
+INFO (2023-06-20 15:46:21,854) [cbps/cbps (line 597)]: Running GMM optimization
+WARNING (2023-06-20 15:46:22,424) [cbps/cbps (line 612)]: Convergence of gmm_loss function with gmm_init start point has failed due to &#39;Maximum number of function evaluations has been exceeded.&#39;
+WARNING (2023-06-20 15:46:22,995) [cbps/cbps (line 630)]: Convergence of gmm_loss function with beta_balance start point has failed due to &#39;Maximum number of function evaluations has been exceeded.&#39;
+INFO (2023-06-20 15:46:23,001) [cbps/cbps (line 726)]: Done cbps function
 </pre>
 </div>
 </div>
@@ -17701,20 +17810,20 @@ class="
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>INFO (2023-05-28 15:53:34,186) [cbps/cbps (line 409)]: Starting cbps function
-INFO (2023-05-28 15:53:34,189) [adjustment/apply_transformations (line 257)]: Adding the variables: [&#39;income_log&#39;, &#39;income_buckets&#39;]
-INFO (2023-05-28 15:53:34,189) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;]
-WARNING (2023-05-28 15:53:34,197) [adjustment/apply_transformations (line 292)]: Dropping the variables: [&#39;income&#39;]
-INFO (2023-05-28 15:53:34,198) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;income_log&#39;, &#39;income_buckets&#39;, &#39;age_group&#39;, &#39;gender&#39;]
-INFO (2023-05-28 15:53:34,311) [cbps/cbps (line 460)]: The formula used to build the model matrix: [&#39;age_group + gender + income_log * income_buckets&#39;]
-INFO (2023-05-28 15:53:34,313) [cbps/cbps (line 472)]: The number of columns in the model matrix: 15
-INFO (2023-05-28 15:53:34,313) [cbps/cbps (line 473)]: The number of rows in the model matrix: 11000
-INFO (2023-05-28 15:53:34,321) [cbps/cbps (line 535)]: Finding initial estimator for GMM optimization
-INFO (2023-05-28 15:53:34,416) [cbps/cbps (line 562)]: Finding initial estimator for GMM optimization that minimizes the balance loss
-INFO (2023-05-28 15:53:34,755) [cbps/cbps (line 597)]: Running GMM optimization
-WARNING (2023-05-28 15:53:35,327) [cbps/cbps (line 612)]: Convergence of gmm_loss function with gmm_init start point has failed due to &#39;Maximum number of function evaluations has been exceeded.&#39;
-WARNING (2023-05-28 15:53:35,898) [cbps/cbps (line 630)]: Convergence of gmm_loss function with beta_balance start point has failed due to &#39;Maximum number of function evaluations has been exceeded.&#39;
-INFO (2023-05-28 15:53:35,904) [cbps/cbps (line 726)]: Done cbps function
+<pre>INFO (2023-06-20 15:46:24,032) [cbps/cbps (line 409)]: Starting cbps function
+INFO (2023-06-20 15:46:24,034) [adjustment/apply_transformations (line 257)]: Adding the variables: [&#39;income_log&#39;, &#39;income_buckets&#39;]
+INFO (2023-06-20 15:46:24,035) [adjustment/apply_transformations (line 258)]: Transforming the variables: [&#39;age_group&#39;, &#39;gender&#39;]
+WARNING (2023-06-20 15:46:24,043) [adjustment/apply_transformations (line 292)]: Dropping the variables: [&#39;income&#39;]
+INFO (2023-06-20 15:46:24,044) [adjustment/apply_transformations (line 295)]: Final variables in output: [&#39;income_log&#39;, &#39;income_buckets&#39;, &#39;age_group&#39;, &#39;gender&#39;]
+INFO (2023-06-20 15:46:24,152) [cbps/cbps (line 460)]: The formula used to build the model matrix: [&#39;age_group + gender + income_log * income_buckets&#39;]
+INFO (2023-06-20 15:46:24,155) [cbps/cbps (line 472)]: The number of columns in the model matrix: 15
+INFO (2023-06-20 15:46:24,156) [cbps/cbps (line 473)]: The number of rows in the model matrix: 11000
+INFO (2023-06-20 15:46:24,163) [cbps/cbps (line 535)]: Finding initial estimator for GMM optimization
+INFO (2023-06-20 15:46:24,230) [cbps/cbps (line 562)]: Finding initial estimator for GMM optimization that minimizes the balance loss
+INFO (2023-06-20 15:46:24,558) [cbps/cbps (line 597)]: Running GMM optimization
+WARNING (2023-06-20 15:46:25,110) [cbps/cbps (line 612)]: Convergence of gmm_loss function with gmm_init start point has failed due to &#39;Maximum number of function evaluations has been exceeded.&#39;
+WARNING (2023-06-20 15:46:25,662) [cbps/cbps (line 630)]: Convergence of gmm_loss function with beta_balance start point has failed due to &#39;Maximum number of function evaluations has been exceeded.&#39;
+INFO (2023-06-20 15:46:25,668) [cbps/cbps (line 726)]: Done cbps function
 </pre>
 </div>
 </div>
@@ -17841,7 +17950,7 @@ glmnetSet           NA
 glmnet_python       NA
 hypergeom_ufunc     NA
 ipfn                NA
-ipykernel           6.23.1
+ipykernel           6.23.2
 ipython_genutils    0.2.0
 jedi                0.18.2
 joblib              1.2.0
@@ -17861,8 +17970,8 @@ patsy               0.5.3
 pexpect             4.8.0
 pickleshare         0.7.5
 pkg_resources       NA
-platformdirs        3.5.1
-plotly              5.14.1
+platformdirs        3.6.0
+plotly              5.15.0
 prompt_toolkit      3.0.38
 psutil              5.9.5
 ptyprocess          0.7.0
@@ -17894,15 +18003,15 @@ zmq                 25.1.0
 zoneinfo            NA
 zope                NA
 -----
-IPython             8.13.2
+IPython             8.14.0
 jupyter_client      8.2.0
-jupyter_core        5.3.0
+jupyter_core        5.3.1
 notebook            6.5.4
 -----
-Python 3.10.6 (main, Mar 10 2023, 10:55:28) [GCC 11.3.0]
-Linux-5.15.0-1037-azure-x86_64-with-glibc2.35
+Python 3.10.6 (main, May 29 2023, 11:10:38) [GCC 11.3.0]
+Linux-5.15.0-1039-azure-x86_64-with-glibc2.35
 -----
-Session information updated at 2023-05-28 15:53
+Session information updated at 2023-06-20 15:46
 </pre>
 </div>
 </div>
